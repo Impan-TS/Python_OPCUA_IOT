@@ -63,8 +63,14 @@ def write_value():
         client.disconnect()  # Disconnect from the server
 
 @app.route('/')
-def index():
-    return render_template('index.html')  # Render the HTML template
+def tse():
+    msg = {'payload': 0}
+    return render_template('tse.html', msg=msg)  # Render the HTML template
+
+@app.route('/spinning2')
+def spinning2():
+    msg = {'payload': latest_values}  # Pass the latest values to the template
+    return render_template('spinning2.html', msg=msg)
 
 if __name__ == '__main__':
     # Start the background thread to read values periodically

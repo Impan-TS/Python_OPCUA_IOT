@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+
+<body>
+    <div id="spinning2Div"
+        style="transform: scale(0.8); left:50px; margin-top:100px; top: 200px; left:50px; width: 100%; height: 100%; display: block;">
+
+        <div
+            style="position: absolute; top: 15px; left: 130px; width: 1260px; height: 640px; border: 2px solid #C5C6D0; border-radius: 20px;">
+        </div>
+
+        <img src="http://localhost:1880/rdf00.gif"
+            style="position:absolute; left:260px; top:220px; width:150px; height:120px;">
+        <img src="http://localhost:1880/redline00_x.png"
+            style="position:absolute; left:195px; top:275px; width:80px; height:7px;">
+
+        <img src="http://localhost:1880/reddot0.png"
+            style="position:absolute; left:367px; top:500px; width:20px; height:20px;">
+        <img src="http://localhost:1880/yellowdot0.jpg"
+            style="position:absolute; left:346px; top:500px; width:12.5px; height:12.5px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 3px;">
+        <img src="http://localhost:1880/sf00.gif"
+            style="position:absolute; left:380px; top:518px; width:50px; height:50px; border-radius: 50px; border: 1px solid black;">
+        <img src="http://localhost:1880/greenline00_y.png"
+            style="position:absolute; left:332px; top:319px; width:6px; height:220px;">
+        <img src="http://localhost:1880/greenline00_x.png"
+            style="position:absolute; left:332px; top:539px; width:47px; height:6px;">
+        <img src="http://localhost:1880/icyclone000.jpg"
+            style="position:absolute; left:502px; top:445px; width:80px; height:180px;">
+        <img src="http://localhost:1880/greenline00_x.png"
+            style="position:absolute; left:432px; top:539px; width:70px; height:6px;">
+
+
+        <img src="http://localhost:1880/redline00_x.png"
+            style="position:absolute; left:395px; top:305px; width:50px; height:6px;">
+        <!-- <img src="http://localhost:1880/redline00_y.png" style="position:absolute; left:444px; top:241px; width:6px; height:70px;">
+<img src="http://localhost:1880/redline00_y.png" style="position:absolute; left:444px; top:311px; width:6px; height:70px;"> -->
+        <img src="http://localhost:1880/fan000.gif"
+            style="position:absolute; left:511px; top:208px; width:42px; height:42px; border-radius: 60px; border: 2.5px solid black; padding:8PX;">
+        <img src="http://localhost:1880/fan000.gif"
+            style="position:absolute; left:511px; top:320px; width:42px; height:42px; border-radius: 60px; border: 2.5px solid black; padding:8PX;">
+        <!-- <img src="http://localhost:1880/redline00_x.png" style="position:absolute; left:444px; top:237px; width:68px; height:6px;">
+<img src="http://localhost:1880/redline00_x.png" style="position:absolute; left:444px; top:377px; width:68px; height:6px;">
+<img src="http://localhost:1880/redline00_x.png" style="position:absolute; left:573px; top:237px; width:68px; height:6px;">
+<img src="http://localhost:1880/redline00_x.png" style="position:absolute; left:573px; top:377px; width:68px; height:6px;">
+<img src="http://localhost:1880/redline00_y.png" style="position:absolute; left:640px; top:237px; width:6px; height:76px;">
+<img src="http://localhost:1880/redline00_y.png" style="position:absolute; left:640px; top:313px; width:6px; height:70px;"> -->
+        <img src="http://localhost:1880/redline00_x.png"
+            style="position:absolute; left:440px; top:305px; width:415px; height:6px;">
+        <img src="http://localhost:1880/exhaust000.gif"
+            style="position:absolute; left:657px; top:103px; width:45px; height:25px;">
+        <img src="http://localhost:1880/intake000.gif"
+            style="position:absolute; left:795px; top:95px; width:35px; height:30px;">
+        <img src="http://localhost:1880/redline00_y.png"
+            style="position:absolute; left:678px; top:129px; width:6px; height:175px;">
+        <img src="http://localhost:1880/greenline00_y.png"
+            style="position:absolute; left:809px; top:130px; width:6px; height:176px;">
+        <img src="http://localhost:1880/airwasher000.png"
+            style="position:absolute; left:923px; top:250px; width:270px; height:150px;">
+        <img src="http://localhost:1880/greenline00_x.png"
+            style="position:absolute; left:809px; top:305px; width:151px; height:6px;">
+        <img src="http://localhost:1880/blueline00_x.png"
+            style="position:absolute; left:1194px; top:295px; width:108px; height:6px;">
+        <img src="http://localhost:1880/fan000.gif"
+            style="position:absolute; left:1273px; top:391px; width:43px; height:43px; border-radius: 60px; border: 2.5px solid black; padding:8PX;">
+        <img src="http://localhost:1880/blueline00_y.png"
+            style="position:absolute; left:1302px; top:295px; width:6px; height:97px;">
+        <img src="http://localhost:1880/blueline00_y.png"
+            style="position:absolute; left:1302px; top:454px; width:6px; height:85px;">
+        <img src="http://localhost:1880/blueline00_y.png"
+            style="position:absolute; left:1253px; top:238px; width:6px; height:63px;">
+
+        <img src="http://localhost:1880/recirculation00.gif"
+            style="position:absolute; left:715px; top:266px; width:78px; height:85px;">
+        <img src="http://localhost:1880/circleline000_x.png"
+            style="position:absolute; left:782px; top:130px; width:60px; height:27px; border: 1px solid black; padding: -2px;"">
+<img src=" http://localhost:1880/circleline000_x.png"
+            style="position:absolute; left:652px; top:128px; width:60px; height:27px; border: 1px solid black; padding: -2px;"">
+<img src=" http://localhost:1880/circleline000_y.png"
+            style="position:absolute; left:739.5px; top:286px; width:27px; height:44px; border: 1px solid black; padding: -2px;">
+
+        <p style="position:absolute; left:315px; top:215px; color:black;"><b>RDF</b></p>
+        <p style="position:absolute; left:529px; top:170px; color:black;"><b>Fan</b></p>
+        <p style="position:absolute; left:529px; top:380px; color:black;"><b>Fan</b></p>
+        <p style="position:absolute; left:400px; top:566px; color:black;"><b>SF</b></p>
+        <p style="position:absolute; left:530px; top:622px; color:black;"><b>Cyclone</b></p>
+        <p style="position:absolute; left:1240px; top:412px; color:black;"><b>Fan</b></p>
+
+        <div style="position:absolute; left:1100px; top:30px; color:#00508a; font-size:30px;"><b><u>Spinning-2</u></b>
+        </div>
+        <p style="position:absolute; left:657px; top:68px; color:black;"><b>Exhaust</b></p>
+        <p style="position:absolute; left:765px; top:65px; color:black;"><b>Fresh Intake</b></p>
+        <p style="position:absolute; left:701px; top:235px; color:black;"><b>Recirculation</b></p>
+        <p style="position:absolute; left:970px; top:399px; color:black;"><b>Air Washer</b></p>
+
+        <img src="http://localhost:1880/redarrow00_r.png"
+            style="position:absolute; left:228px; top:269px; width:18px; height:19px;">
+        <img src="http://localhost:1880/redarrow00_r.png"
+            style="position:absolute; left:450px; top:299.5px; width:16px; height:17px;">
+        <!-- <img src="http://localhost:1880/redarrow00_r.png" style="position:absolute; left:472px; top:232px; width:16px; height:17px;">
+<img src="http://localhost:1880/redarrow00_r.png" style="position:absolute; left:603px; top:232px; width:16px; height:17px;">
+<img src="http://localhost:1880/redarrow00_r.png" style="position:absolute; left:472px; top:372px; width:16px; height:17px;">
+<img src="http://localhost:1880/redarrow00_r.png" style="position:absolute; left:603px; top:372px; width:16px; height:17px;"> -->
+        <img src="http://localhost:1880/redarrow00_r.png"
+            style="position:absolute; left:610px; top:299.5px; width:16px; height:17px;">
+        <img src="http://localhost:1880/redarrow00_r.png"
+            style="position:absolute; left:695px; top:299.5px; width:16px; height:17px;">
+        <img src="http://localhost:1880/greenarrow00_r.png"
+            style="position:absolute; left:855px; top:299.5px; width:16px; height:17px;">
+        <img src="http://localhost:1880/greenarrow00_b.png"
+            style="position:absolute; left:327px; top:425px; width:16px; height:17px;">
+        <img src="http://localhost:1880/greenarrow00_r.png"
+            style="position:absolute; left:458px; top:534px; width:16px; height:17px;">
+        <img src="http://localhost:1880/bluearrow00_b.png"
+            style="position:absolute; left:1297px; top:340px; width:16px; height:17px;">
+        <img src="http://localhost:1880/bluearrow00_b.png"
+            style="position:absolute; left:1297px; top:480px; width:16px; height:17px;">
+
+        <img src="http://localhost:1880/reddot0.png"
+            style="position:absolute; left:355px; top:332px; width:20px; height:20px;">
+        <img src="http://localhost:1880/yellowdot0.jpg"
+            style="position:absolute; left:376px; top:332px; width:12.5px; height:12.5px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 3px;">
+        <img src="http://localhost:1880/reddot0.png"
+            style="position:absolute; left:595px; top:445px; width:20px; height:20px;">
+        <img src="http://localhost:1880/yellowdot0.jpg"
+            style="position:absolute; left:616px; top:445px; width:12.5px; height:12.5px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 3px;">
+        <img src="http://localhost:1880/reddot0.png"
+            style="position:absolute; left:580px; top:333px; width:20px; height:20px;">
+        <img src="http://localhost:1880/yellowdot0.jpg"
+            style="position:absolute; left:601px; top:333px; width:12.5px; height:12.5px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 3px;">
+        <img src="http://localhost:1880/greendot0.png"
+            style="position:absolute; left:578px; top:190px; width:20px; height:20px;">
+        <img src="http://localhost:1880/yellowdot0.jpg"
+            style="position:absolute; left:599px; top:190px; width:12.5px; height:12.5px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 3px;">
+        <img src="http://localhost:1880/reddot0.png"
+            style="position:absolute; left:1087px; top:357px; width:20px; height:20px;">
+        <img src="http://localhost:1880/yellowdot0.jpg"
+            style="position:absolute; left:1108px; top:357px; width:12.5px; height:12.5px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 3px;">
+        <img src="http://localhost:1880/reddot0.png"
+            style="position:absolute; left:1335px; top:450px; width:20px; height:20px;">
+        <img src="http://localhost:1880/yellowdot0.jpg"
+            style="position:absolute; left:1356px; top:450px; width:12.5px; height:12.5px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 3px;">
+
+        <div
+            style="position:absolute; left:1215px; top:526px; border:3px solid skyblue; width:150px; height:90px; border-radius:7px">
+        </div>
+
+        <!-- Custom Template for Displaying Values with Specific Positions -->
+        <div
+            style="position:absolute; left:362px; top:235px; border:2px solid black; padding:0px 15px 0px 20px; border-radius:5px">
+            <span id="counter">{{ msg.payload['Counter'] }}</span> Pa
+        </div>
+
+        <div
+            style="position:absolute; left:500px; top:280px; border:2px solid black; padding:0px 15px 0px 20px; border-radius:5px">
+            <span id="random">{{ msg.payload['Random'] }}</span> %
+        </div>
+
+        <div
+            style="position:absolute; left:1140px; top:355px; border:2px solid black; padding:0px 15px 0px 20px; border-radius:5px">
+            <span id="sawtooth">{{ msg.payload['Sawtooth'] }}</span> %
+        </div>
+
+        <div
+            style="position:absolute; left:1205px; top:215px; border:2px solid black; padding:0px 15px 0px 20px; border-radius:5px">
+            <span id="sinusoid">{{ msg.payload['Sinusoid'] }}</span> °C
+        </div>
+
+        <div
+            style="position:absolute; left:1220px; top:475px; border:2px solid black; padding:0px 15px 0px 20px; border-radius:5px">
+            <span id="square">{{ msg.payload['Square'] }}</span> %
+        </div>
+
+        <div
+            style="position:absolute; left:1282px; top:539px; border:2px solid black; padding:0px 15px 0px 20px; border-radius:5px">
+            <span id="triangle">{{ msg.payload['Triangle'] }}</span>
+        </div>
+
+        <div
+            style="position:absolute; left:1282px; top:583px; border:2px solid black; padding:0px 15px 0px 20px; border-radius:5px">
+            <span id="random2">{{ msg.payload['Random'] }}</span>
+        </div>
+
+        <script>
+            // Initialize Socket.IO client
+            var socket = io();
+
+            // Function to format numbers
+            function formatValue(value) {
+                // Convert to float and check if it has a decimal point
+                let floatValue = parseFloat(value);
+                return floatValue % 1 === 0 ? floatValue.toString() : floatValue.toFixed(2);
+            }
+
+            // Listen for updates from the server
+            socket.on('update', function (data) {
+                // Update the specific elements with the new formatted values
+                document.getElementById('counter').textContent = formatValue(data.Counter);
+                document.getElementById('random').textContent = formatValue(data.Random);
+                document.getElementById('sawtooth').textContent = formatValue(data.Sawtooth);
+                document.getElementById('sinusoid').textContent = formatValue(data.Sinusoid);
+                document.getElementById('square').textContent = formatValue(data.Square);
+                document.getElementById('triangle').textContent = formatValue(data.Triangle);
+                document.getElementById('random2').textContent = formatValue(data.Random);  // Random appears twice
+            });
+        </script>
+        <p style="position:absolute; left:1224px; top:533px;"><b>%R.H</b></p>
+        <p style="position:absolute; left:1238px; top:580px;"><b>°C</b></p>
+
+    </div>
+</body>
+
+</html>
