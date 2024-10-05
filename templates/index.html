@@ -24,7 +24,7 @@
 
             document.getElementById('writeButton').onclick = function() {
                 var value = document.getElementById('counterValue').value;
-                var nodeId = "ns=3;i=1008"; // Node ID for the Counter
+                var nodeId = "ns=3;i=1008";
                 fetch('/write', {
                     method: 'POST',
                     headers: {

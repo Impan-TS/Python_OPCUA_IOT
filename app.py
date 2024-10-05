@@ -7,7 +7,7 @@ import time
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-# Replace with your OPC UA server URL
+# OPC UA server URL
 OPC_UA_URL = "opc.tcp://DESKTOP-BSC7DMC:53530/OPCUA/SimulationServer"
 
 # Create an OPC UA client instance
@@ -22,7 +22,7 @@ def read_values_periodically():
         try:
             client.connect()  # Connect to the OPC UA server
             
-            # Define your Node IDs here
+            # Define Node IDs here
             node_ids = {
                 "Counter": "ns=3;i=1008",
                 "Random": "ns=3;i=1003",
@@ -70,7 +70,7 @@ def tse():
 @app.route('/spinning2')
 def spinning2():
     msg = {'payload': latest_values}  # Pass the latest values to the template
-    return render_template('spinning2.html', msg=msg)
+    return render_template('spinning2.html', msg=msg, active_submodule='departmentsSubmodules')
 
 if __name__ == '__main__':
     # Start the background thread to read values periodically
