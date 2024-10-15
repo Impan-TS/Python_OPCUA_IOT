@@ -109,8 +109,17 @@
             color: white;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            /* Add this line */
             padding: 0 20px;
             border-bottom: 1px solid black;
+        }
+
+        /* Remove 'left' positioning and let flexbox handle the alignment */
+        .user-profile {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
         }
 
         .company-logo {
@@ -143,43 +152,32 @@
             height: 60px;
         }
 
-        /* New styles for user profile dropdown */
-        .user-profile {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            padding-left: 1160px;
-            /* Space between title and icon */
-        }
 
         .profile-icon {
-            font-size: 20px;
+            font-size: 18px;
             /* Adjust font size for the initial */
             color: #333;
-            /* Text color for the initial */
             background-color: #fff;
-            /* White background */
-            width: 40px;
-            height: 40px;
-            /* Circle size */
+            width: 35px;
+            height: 35px;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 50%;
-            /* Makes the container circular */
             border: 1px solid #fff;
-            /* White border */
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            /* Optional: Adds a subtle shadow */
         }
-
 
         .profile-dropdown {
             display: none;
             position: absolute;
-            right: 0;
+            top: 45px;
+            /* Adjusts the dropdown below the profile icon */
+            left: 50%;
+            transform: translateX(-50%);
+            /* Centers the dropdown below the profile icon */
             background-color: #000060;
-            min-width: 150px;
+            min-width: 100px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             z-index: 1;
         }
@@ -189,10 +187,40 @@
             padding: 12px 16px;
             text-decoration: none;
             display: block;
+            text-align: center;
         }
 
         .profile-dropdown a:hover {
             background-color: #005fa3;
+        }
+
+        /* Container for profile icon and tooltip */
+        .profile-icon-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: auto;
+            background-color: #000060;
+            color: #fff;
+            text-align: center;
+            padding: 5px 8px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 110%;
+            /* Position above the profile icon */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-icon-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -202,52 +230,54 @@
 
 <body>
     <div class="sidebar">
-        <!-- <button id="home" class="module-button" onclick="toggleSubmodules('homeSubmodules', this)"><i
-                class="fa-solid fa-house"></i> Home</button>
-        <div id="homeSubmodules" class="submodule-container"></div> -->
-
-        <button id="home" class="module-button" onclick="window.location.href='http://127.0.0.1:7000/dashboard'"><i
-                class="fa-solid fa-house"></i> Home</button>
+        <button id="home" class="module-button" onclick="window.location.href='http://127.0.0.1:7000/dashboard'">
+            <i class="fa-solid fa-house"></i> Home
+        </button>
         <div id="homeSubmodules" class="submodule-container"></div>
-
-        <button id="departments" class="module-button" onclick="toggleSubmodules('departmentsSubmodules', this)"><i
-                class="fa-solid fa-building"></i> Departments</button>
+    
+        <button id="departments" class="module-button" onclick="toggleSubmodules('departmentsSubmodules', this)">
+            <i class="fa-solid fa-building"></i> Departments
+        </button>
         <div id="departmentsSubmodules" class="submodule-container"></div>
-
-        <button id="alarms" class="module-button" onclick="toggleSubmodules('alarmsSubmodules', this)"><i
-                class="fa-solid fa-triangle-exclamation"></i> Alarms</button>
+    
+        <button id="alarms" class="module-button" onclick="toggleSubmodules('alarmsSubmodules', this)">
+            <i class="fa-solid fa-triangle-exclamation"></i> Alarms
+        </button>
         <div id="alarmsSubmodules" class="submodule-container"></div>
-
-        <button id="settings" class="module-button" onclick="toggleSubmodules('settingsSubmodules', this)"><i
-                class="fa-solid fa-gear"></i> Settings</button>
+    
+        <!-- Conditionally render Settings button based on user role -->
+        {% if session['role'] == 'admin' %}
+        <button id="settings" class="module-button" onclick="toggleSubmodules('settingsSubmodules', this)">
+            <i class="fa-solid fa-gear"></i> Settings
+        </button>
         <div id="settingsSubmodules" class="submodule-container"></div>
-
-        <button id="reports" class="module-button" onclick="toggleSubmodules('reportsSubmodules', this)"><i
-                class="fa-solid fa-file"></i> Analytics</button>
+        {% endif %}
+    
+        <button id="reports" class="module-button" onclick="toggleSubmodules('reportsSubmodules', this)">
+            <i class="fa-solid fa-file"></i> Analytics
+        </button>
         <div id="reportsSubmodules" class="submodule-container"></div>
     </div>
+    
 
     <div class="title-bar">
         <div class="left-section">
             <img src="{{ url_for('static', filename='images/LOGO.png') }}" alt="Company Logo" class="company-logo">
         </div>
-        <div class="company-name"
-            style="position: absolute; top: 11px; font-size:30px; font-weight: bold; left: 520px;">
+        <div class="company-name">
             <span>TSE Control System</span>
         </div>
-        <!-- <div class="right-section">
-            <span id="time"></span><br>
-            <span id="date"></span>
-        </div> -->
-
         <div class="user-profile" onclick="toggleProfileDropdown()">
-            <div class="profile-icon" id="profileIcon"></div>
+            <div class="profile-icon-container">
+                <div class="profile-icon" id="profileIcon"></div>
+                <span class="tooltip-text" id="usernameTooltip">{{ session['username'] }}</span>
+            </div>
             <div class="profile-dropdown" id="profileDropdown">
-                <a href="#" id="usernameDisplay">Username</a>
                 <a href="/logout">Logout</a>
             </div>
         </div>
     </div>
+
 
     <div class="content">
         {% block content %}
@@ -333,17 +363,17 @@
         //     var ampm = hours >= 12 ? 'PM' : 'AM';
         //     hours = hours % 12; // Convert to 12-hour format
         //     hours = hours ? String(hours).padStart(2, '0') : '12'; // The hour '0' should be '12'
-        //     var timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+        //     var timeString = ${hours}:${minutes}:${seconds} ${ampm};
 
         //     // Format date
         //     var day = String(now.getDate()).padStart(2, '0');
         //     var month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
         //     var year = now.getFullYear();
-        //     var dateString = `${day}-${month}-${year}`;
+        //     var dateString = ${day}-${month}-${year};
 
         //     // Update the elements with new format
-        //     document.getElementById('time').innerText = `Time: ${timeString}`;
-        //     document.getElementById('date').innerText = `Date: ${dateString}`;
+        //     document.getElementById('time').innerText = Time: ${timeString};
+        //     document.getElementById('date').innerText = Date: ${dateString};
         // }, 1000);
 
         // Toggle user profile dropdown
@@ -354,7 +384,7 @@
 
         // Set the username in the profile dropdown and profile icon
         var username = "{{ session['username'] }}"; // Assuming you store the username in session
-        document.getElementById('usernameDisplay').innerText = username;
+        // document.getElementById('usernameDisplay').innerText = username;
 
         // Set the first letter of the username as the profile icon
         if (username) {

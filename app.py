@@ -98,6 +98,7 @@ def read_values_periodically():
         except Exception as e:
             print(f"Error reading values: {str(e)}")
             time.sleep(1)  # Wait before retrying in case of error
+            
 
 @app.route('/write', methods=['POST'])
 def write_value():
@@ -116,42 +117,58 @@ def write_value():
     finally:
         client.disconnect()  # Disconnect from the server
         
+        
 @app.route('/', methods=['GET', 'POST'])
 def user_login():
     if request.method == 'POST':
-        # Process the login form submission here
         username = request.form['username']
         password = request.form['password']
-        
-        # Check the username and password (you can move this to a separate function)
+
         conn = create_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+
+        # Authenticate user (user role)
+        cursor.execute("""
+            SELECT * FROM users 
+            WHERE username COLLATE SQL_Latin1_General_CP1_CS_AS = ? 
+            AND password COLLATE SQL_Latin1_General_CP1_CS_AS = ?""", 
+            (username, password))
         user = cursor.fetchone()
 
         if user:
             session['userloggedin'] = True
-            session['userid'] = user.id  # Assuming 'id' is the column name for the user ID
-            session['username'] = user.username  # Assuming 'username' is the column name for the username
-            conn.close()  # Close the connection after use
-            return redirect(url_for('tsepage'))  # Redirect to the tse page
-        else:
-            # Invalid login
-            flash('Invalid username or password')
-            conn.close()  # Close the connection after use
-            return render_template('User management/userlogin.html')  # Show login page again
+            session['username'] = username
+            session['role'] = 'user'  # Set the user's role in session
+            return redirect(url_for('dashboard', user_type='user'))
 
-    # Handle GET requests as usual
-    response = make_response(render_template('User management/userlogin.html'))
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+        # Authenticate admin (admin role)
+        cursor.execute("""
+            SELECT * FROM admins 
+            WHERE username COLLATE SQL_Latin1_General_CP1_CS_AS = ? 
+            AND password COLLATE SQL_Latin1_General_CP1_CS_AS = ?""", 
+            (username, password))
+        admin = cursor.fetchone()
+
+        if admin:
+            session['userloggedin'] = True
+            session['username'] = username
+            session['role'] = 'admin'  # Set the admin's role in session
+            return redirect(url_for('dashboard', user_type='admin'))
+
+        # Flash the error message if credentials are invalid
+        flash('Invalid credentials. Please try again.', 'danger')
+
+    return render_template('User management/userlogin.html')
 
 
-@app.route('/tse', methods=['GET', 'POST'])
-def tsepage():
-    # Check if the user is logged in
+@app.route('/index')
+def index():
+    msg = {'payload': 0}
+    return render_template('iot/index.html', msg=msg)  # Render the HTML template
+
+
+@app.route('/tse')
+def tse():
     if 'userloggedin' not in session:
         # If not logged in, redirect to the user login page
         return redirect(url_for('user_login'))
@@ -162,47 +179,34 @@ def tsepage():
         response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         return response
     
-@app.route('/userlogin', methods=['GET', 'POST'])
-def userlogin():
-    # Check if the user is already logged in
-    if 'userloggedin' in session:
-        # If already logged in, redirect to the report page
-        return redirect(url_for('tsepage'))
-
-    message = ''
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        # Establish a database connection
-        conn = create_connection()
-        cursor = conn.cursor()
-        
-        # Use a case-sensitive collation for comparison
-        cursor.execute("SELECT * FROM users WHERE username = ? COLLATE Latin1_General_CS_AS AND password = ?", (username, password,))
-        user = cursor.fetchone()
-        
-        if user:
-            session['userloggedin'] = True
-            session['userid'] = user.id  # Assuming 'id' is the column name for the user ID
-            session['username'] = user.username  # Assuming 'username' is the column name for the username
-            message = 'Logged in successfully!'
-            conn.close()  # Close the connection after use
-            return redirect(url_for('tsepage'))  # This should redirect to the /tse route
-
-        else:
-            # Close the connection in case of failure
-            conn.close()
-            # Display error message only when login attempt fails
-            message = 'Invalid username or password'
     
-    # Render the login page
-    response = make_response(render_template('User management/userlogin.html', message=message))
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+@app.route('/dashboard')
+def dashboard():
+    if 'userloggedin' not in session:
+        # If not logged in, redirect to the user login page
+        return redirect(url_for('user_login'))
+    
+    else:
+        response = make_response(render_template('iot/dashboard.html'))
+        # Add cache-control header to prevent caching
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        return response
 
+
+@app.route('/spinning2')
+def spinning2():
+    msg = {'payload': latest_values}  # Pass the latest values to the template
+    if 'userloggedin' not in session:
+        # If not logged in, redirect to the user login page
+        return redirect(url_for('user_login'))
+    
+    else:
+        return render_template('iot/spinning2.html', msg=msg, active_submodule='departmentsSubmodules')
+        response = make_response(render_template('iot/spinning2.html'))
+        # Add cache-control header to prevent caching
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        return response
+    
 
 @app.route('/logout')
 def logout():
@@ -217,30 +221,6 @@ def logout():
     response.headers['Expires'] = '0'
     return response
 
-# @app.route('/logout')
-# def logout():
-#     session.pop('username', None)  # Clear the session
-#     return redirect(url_for('user_login'))  # Redirect to login page
-
-# @app.route('/tse')
-# def tse():
-#     msg = {'payload': 0}
-#     return render_template('iot/tse.html', msg=msg)  # Render the tse.html template
-
-@app.route('/index')
-def index():
-    msg = {'payload': 0}
-    return render_template('iot/index.html', msg=msg)  # Render the HTML template
-
-@app.route('/dashboard')
-def dashboard():
-    msg = {'payload': 0}
-    return render_template('iot/dashboard.html', msg=msg)  # Render the HTML template
-
-@app.route('/spinning2')
-def spinning2():
-    msg = {'payload': latest_values}  # Pass the latest values to the template
-    return render_template('iot/spinning2.html', msg=msg, active_submodule='departmentsSubmodules')
 
 if __name__ == '__main__':
     # Start the background thread to read values periodically

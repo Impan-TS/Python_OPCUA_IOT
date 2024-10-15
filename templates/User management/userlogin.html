@@ -120,11 +120,15 @@
 
     <div class="container" style="position: fixed;">
         <h2 style="margin-bottom: -8%;">User Login</h2>
-        {% if message %}
-        <div class="alert alert-danger">{{ message }}</div>
+        <!-- Display flash messages here -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
         {% endif %}
-        <form action="{{ url_for('userlogin') }}" method="post">
-
+        {% endwith %}
+        <form action="{{ url_for('user_login') }}" method="post">
             <div class="form-group" style="margin-top: 50px;">
                 <label for="username">
                     <h6>Username:</h6>
@@ -140,6 +144,7 @@
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
+
 
 </body>
 
