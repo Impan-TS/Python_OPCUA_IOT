@@ -1,0 +1,301 @@
+{% extends "iot/tse.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js (for date handling) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include Chart.js Moment.js adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Include Plotly -->
+
+    <style>
+        /* Center the canvas and set width and height */
+        #chart-container {
+            transform: scale(0.8);
+            position: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30vh;
+            /* 80% of the viewport height */
+            width: 40%;
+            margin: 20px 0;
+            /* border: 2px solid black; */
+            border-radius: 15px;
+            padding: 30px;
+            /* margin-left: 20px; */
+            margin-top: 200px;
+            background-color: aliceblue;
+            border: 1px solid black;
+        }
+
+        /* Set the specific width and height for the canvas */
+        canvas {
+            width: 90vw;
+            /* 80% of the viewport width */
+            height: 35vh;
+            /* 60% of the viewport height */
+        }
+
+        /* Optional: Adjust the position of the chart */
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100px;
+            width: 600px;
+            margin: 0;
+        }
+
+        #gauge-container {
+            transform: scale(0.6);
+            left: 160px;
+            padding-top: 50px;
+            position: fixed;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        /* Individual gauge positioning and dimensions */
+        .gauge {
+            width: 300px;
+            /* Default width */
+            height: 250px;
+            /* Default height */
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .gauge-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            /* Padding for space inside the box */
+            margin: 15px;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+            border: 1px solid black;
+            /* Smooth transition for resizing */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gauge-container"> 
+        <div class="gauge-box" id="randomGauge"></div>
+        <div class="gauge-box" id="counterGauge"></div>
+    </div>
+
+    <div id="gauge-container">
+        <div id="randomGauge" class="gauge" style="top: 0; left: 0;"></div>
+        <div id="counterGauge" class="gauge" style="top: 0; left: 10px;"></div>
+        <!-- <div id="sawtoothGauge" class="gauge" style="top: 0; left: 600px;"></div> -->
+    </div>
+
+    <div id="chart-container">
+        <canvas id="myChart"></canvas> <!-- Canvas element for Chart.js -->
+    </div>
+
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], // Timestamps or data labels
+                datasets: [
+                    {
+                        label: 'Temperature',
+                        backgroundColor: 'rgba(0, 99, 132, 0.6)',
+                        borderColor: 'rgba(0, 99, 132, 1)',
+                        data: [] // Values will be pushed here dynamically
+                    },
+                    {
+                        label: 'Humidity',
+                        backgroundColor: 'rgba(99, 132, 0, 0.6)',
+                        borderColor: 'rgba(99, 132, 0, 1)',
+                        data: [] // Counter values
+                    }
+                    // {
+                    //     label: 'Sawtooth Value',
+                    //     backgroundColor: 'rgba(132, 0, 99, 0.6)',
+                    //     borderColor: 'rgba(132, 0, 99, 1)',
+                    //     data: [] // Sawtooth values
+                    // }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Let the chart take the defined canvas size
+                // plugins: {
+                //     title: {
+                //         display: true,
+                //         text: 'Spinning2', // Set the title text
+                //         position: 'top',
+                //         padding: {
+                //             top: 2, // Padding from the top
+                //             bottom: 20, // Padding from the bottom
+                //         },
+                //         font: {
+                //             size: 20, // Set the font size
+                //             weight: 'bold', // Set the font weight
+                //             family: 'Arial', // Optionally set a specific font family
+                //         },
+                //         color: 'black', // Set the font color directly here
+                //     }
+                // },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'second',  // Set the time interval to seconds
+                            stepSize: 5,     // Set step size to 5 seconds
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10, // Limit the number of ticks displayed
+                            callback: function (value) {
+                                return moment(value).format('HH:mm:ss'); // Format without AM/PM
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+
+        });
+
+        var socket = io.connect('http://127.0.0.1:7000'); // Connect to Socket.IO
+
+        socket.on('update', function (data) {
+            console.log('Data received: ', data); // Debugging: check console for data
+            var currentTime = new Date(); // Use Date object for timestamps
+
+            // Add new data points to chart
+            chart.data.labels.push(currentTime);
+            chart.data.datasets[0].data.push(data.Random);    // Random Value
+            chart.data.datasets[1].data.push(data.Counter);   // Counter Value
+            // chart.data.datasets[2].data.push(data.Sawtooth);  // Sawtooth Value
+
+            // Keep only the last 20 data points
+            if (chart.data.labels.length > 20) {
+                chart.data.labels.shift();
+                chart.data.datasets.forEach(dataset => dataset.data.shift());
+            }
+            chart.update();
+        });
+
+
+        // Update gauges
+        socket.on('gauge_update', function (data) {
+            var randomValue = data.Random;
+            var counterValue = data.Counter;
+
+            // Function to create a compass-style gauge and adjust the box size dynamically
+            function createCompassGauge(elementId, value, title) {
+                var color;
+
+                var gaugeData = [{
+                    type: 'indicator',
+                    mode: 'gauge+number',
+                    value: value,
+                    title: { text: title, font: { size: 20 } }, // Adjust title font size
+                    number: { font: { size: 18 } }, // Adjust value (number) font size
+                    gauge: {
+                        axis: {
+                            range: [-4, 8],
+                            visible: true,
+                            tickvals: [-4, -2, 0, 2, 4, 6, 8],
+                            ticktext: ['-4', '-2', '0', '2', '4', '6', '8'],
+                            tickcolor: "gray",
+                            ticks: "outside",
+                            tickwidth: 2,
+                            tickfont: { size: 14 } // Adjust the tick label size
+                        },
+                        bar: {
+                            color: color,
+                            thickness: 0.6
+                        },
+                        bgcolor: "white",
+                        bordercolor: "lightgray",
+                        borderwidth: 2,
+                        steps: [
+                            { range: [-4, 0], color: "#2ECC40" }, // Light Green 
+                            { range: [0, 4], color: "#FF851B" }, // Light Orange
+                            { range: [4, 8], color: "#FF4136" } // Light Red
+                        ],
+                        needle: {
+                            shape: "arrow",
+                            length: 0.7,
+                            color: color,
+                            width: 2,
+                            line: {
+                                color: 'black',
+                                width: 2
+                            }
+                        },
+                        threshold: {
+                            line: { color: "black", width: 4 },
+                            thickness: 0.75,
+                            value: value
+                        },
+                        tickangle: 0
+                    }
+                }];
+
+                // Adjust the layout size for the gauge
+                var layout = {
+                    width: 340,  // Adjust width of the gauge
+                    height: 143, // Adjust height of the gauge
+                    margin: { t: 50, b: 10, l: 40, r: 40 }, // Adjust margins
+                    paper_bgcolor: 'rgba(0,0,0,0)', // Transparent background
+                    plot_bgcolor: 'rgba(0,0,0,0)', // Transparent plot background
+                    font: { color: color }
+                };
+
+                // Dynamically adjust the gauge-box size to match the gauge size + padding
+                var gaugeBox = document.getElementById(elementId).parentElement;
+                var padding = 40; // Define the padding for the gauge box
+
+                gaugeBox.style.width = layout.width + padding + 'px';
+                gaugeBox.style.height = layout.height + padding + 'px';
+
+                // Render the gauge
+                Plotly.newPlot(elementId, gaugeData, layout, { displayModeBar: false }); // Remove the mode bar
+            }
+
+            // Call the function to create and adjust gauges
+            createCompassGauge('randomGauge', randomValue, 'Temperature');
+            createCompassGauge('counterGauge', counterValue, 'Humidity');
+        });
+
+
+    </script>
+</body>
+
+</html>
+
+{% endblock %}
